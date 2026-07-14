@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([$projeto_id, $nome, $tipo, $piso, $descricao]);
                 $novo_id = $db->lastInsertId();
                 $_SESSION['flash'] = 'Planta criada.';
-                header("Location: editor-planta.php?id=$novo_id"); exit;
+                header("Location: pages/editor-planta.php?id=$novo_id"); exit;
             } else {
                 $stmt = $db->prepare("UPDATE plantas SET nome=?, tipo=?, piso=?, descricao=? WHERE id=?");
                 $stmt->execute([$nome, $tipo, $piso, $descricao, $id]);
@@ -113,7 +113,7 @@ if ($action === 'list') {
                     <?php endif; ?>
                 </div>
                 <div style="display:flex;gap:4px;padding:8px 16px;border-top:1px solid var(--border)">
-                    <a href="editor-planta.php?id=<?= $pl['id'] ?>" class="btn btn-sm btn-primary">🗺️ Abrir Editor</a>
+                    <a href="pages/editor-planta.php?id=<?= $pl['id'] ?>" class="btn btn-sm btn-primary">🗺️ Abrir Editor</a>
                     <a href="index.php?p=plantas&action=edit&id=<?= $pl['id'] ?>" class="btn btn-sm btn-outline">✏️</a>
                     <form method="POST" style="display:inline" onsubmit="return confirm('Eliminar planta e todos os dados associados?')">
                         <?= csrf_field() ?>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle ?? 'Gestor de Projeto CCTV') ?></title>
+    <base href="/gestor_cctv/">
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>

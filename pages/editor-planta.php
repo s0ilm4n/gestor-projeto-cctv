@@ -10,7 +10,7 @@ $db = getDB();
 $id = (int)($_GET['id'] ?? 0);
 if (!$id) { header('Location: index.php?p=plantas'); exit; }
 
-$planta = $db->prepare("SELECT pl.*, p.nome_projeto, p.escala_px_por_metro FROM plantas pl JOIN projetos_cctv p ON pl.projeto_id = p.id WHERE pl.id=?");
+$planta = $db->prepare("SELECT pl.*, p.nome_projeto FROM plantas pl JOIN projetos_cctv p ON pl.projeto_id = p.id WHERE pl.id=?");
 $planta->execute([$id]);
 $planta = $planta->fetch();
 if (!$planta) { header('Location: index.php?p=plantas'); exit; }
