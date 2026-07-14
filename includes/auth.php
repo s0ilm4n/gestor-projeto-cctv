@@ -130,3 +130,61 @@ function doriBadge($ppm, int $objetivo = 125): string {
     $ico = $conforme ? '✅' : '❌';
     return "<span class=\"badge {$cls}\">{$ico} {$ppm} ppm</span>";
 }
+
+/**
+ * Calcula DORI considerando altura e ângulo de inclinação
+ *
+ * @param float $resolucao_h  Resolução horizontal (px)
+ * @param float $focal_mm     Distância focal (mm)
+ * @param float $sensor_mm    Largura do sensor (mm)
+ * @param float $altura_m     Altura de montagem (m)
+ * @param float $angulo_deg   Ângulo de inclinação (graus, 0=horizontal, 90=vertical)
+ * @param float $dist_m       Distância horizontal ao alvo (m)
+ *
+ * @return array ['fov_h','largura_cena','dist_real','ppm','nivel','focal_recomendada']
+ */
+function calcularDORI(
+    float $resolucao_h,
+    float $focal_mm,
+    float $sensor_mm,
+    float $altura_m = 3.0,
+    float $angulo_deg = 45.0,
+    float $dist_m = 10.0
+): array {
+    // FOV horizontal
+    $fov_h = 2 * rad2deg(atan2($sensor_mm, 2 * max($focal_mm, 0.1)));
+
+    // Ângulo em radianos (conversão: 0°=horizontal, 90°=para baixo)
+    $ang_rad = deg2rad(max($angulo_deg, 1));
+
+    // Distância real (linha de visão) considerando altura
+    $dist_real = $altura_m / sin($ang_rad);
+
+    // Largura da cena no plano perpendicular à linha de visão
+    $largura_cena = 2 * $dist_real * tan(deg2rad($fov_h / 2));
+
+    // PPM real
+    $ppm = $largura_cena > 0 ? $resolucao_h / $largura_cena : 0;
+
+    // Nível DORI
+    $nivel = 'D';
+    if ($ppm >= 250) $nivel = 'I';
+    elseif ($ppm >= 125) $nivel = 'R';
+    elseif ($ppm >= 62) $nivel = 'O';
+    elseif ($ppm >= 25) $nivel = 'D';
+    else $nivel = '';
+
+    // Distância focal recomendada para atingir o nível R (125 ppm)
+    $focal_rec = $largura_cena > 0
+        ? ($sensor_mm * $dist_real) / ($resolucao_h / 125)
+        : 0;
+
+    return [
+        'fov_h'          => round($fov_h, 1),
+        'largura_cena'   => round($largura_cena, 2),
+        'dist_real'      => round($dist_real, 2),
+        'ppm'            => round($ppm, 0),
+        'nivel'          => $nivel,
+        'focal_rec'      => round($focal_rec, 1),
+    ];
+}

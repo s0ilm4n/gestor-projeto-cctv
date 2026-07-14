@@ -164,38 +164,15 @@ CREATE TABLE IF NOT EXISTS dori_calculos (
     distancia_camera_m DECIMAL(10,2) NOT NULL,
     resolucao_horizontal INT DEFAULT 1920,
     sensor_largura_mm DECIMAL(5,2) DEFAULT 5.60,
+    altura_montagem_m DECIMAL(5,2) DEFAULT 3.0,
+    angulo_inclinacao DECIMAL(5,1) DEFAULT 45.0,
 
-    -- Resultados calculados
-    ppm_necessario INT GENERATED ALWAYS AS (
-        CASE objetivo
-            WHEN 'identificacao' THEN 250
-            WHEN 'reconhecimento' THEN 125
-            WHEN 'observacao' THEN 62
-            WHEN 'deteccao' THEN 25
-        END
-    ) STORED,
-
-    ppm_calculado DECIMAL(10,2) GENERATED ALWAYS AS (
-        ROUND(resolucao_horizontal / largura_cena_m, 2)
-    ) STORED,
-
-    distancia_focal_recomendada_mm DECIMAL(10,2) GENERATED ALWAYS AS (
-        ROUND((sensor_largura_mm * distancia_camera_m) / largura_cena_m, 2)
-    ) STORED,
-
-    fov_h_graus DECIMAL(5,1) GENERATED ALWAYS AS (
-        ROUND(2 * ATAN2(sensor_largura_mm, 2 * NULLIF(distancia_camera_m, 0)) * 180 / PI(), 1)
-    ) STORED,
-
-    conforme BOOLEAN GENERATED ALWAYS AS (
-        (resolucao_horizontal / largura_cena_m) >=
-        CASE objetivo
-            WHEN 'identificacao' THEN 250
-            WHEN 'reconhecimento' THEN 125
-            WHEN 'observacao' THEN 62
-            WHEN 'deteccao' THEN 25
-        END
-    ) STORED,
+    -- Resultados calculados (preenchidos pelo PHP com altura/ângulo)
+    ppm_necessario INT DEFAULT NULL,
+    ppm_calculado DECIMAL(10,2) DEFAULT NULL,
+    distancia_focal_recomendada_mm DECIMAL(10,2) DEFAULT NULL,
+    fov_h_graus DECIMAL(5,1) DEFAULT NULL,
+    conforme BOOLEAN DEFAULT NULL,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -217,6 +194,10 @@ CREATE TABLE IF NOT EXISTS plantas (
     dimensao_x INT DEFAULT 2000,            -- largura canvas em px
     dimensao_y INT DEFAULT 1500,            -- altura canvas em px
     escala_px_por_metro DECIMAL(10,6) DEFAULT 1.0,
+    latitude DECIMAL(10,7) DEFAULT NULL,
+    longitude DECIMAL(10,7) DEFAULT NULL,
+    zoom_mapa INT DEFAULT NULL,
+    mapa_ficheiro VARCHAR(255) DEFAULT NULL,
     dados_json LONGTEXT,                    -- estado completo do canvas (objetos)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -242,10 +223,10 @@ CREATE TABLE IF NOT EXISTS plantas_cameras (
     resolucao_v INT DEFAULT 1080,
     sensor_largura_mm DECIMAL(5,2) DEFAULT 5.60,
     distancia_focal_mm DECIMAL(5,2) DEFAULT 4.0,
+    altura_montagem_m DECIMAL(5,2) DEFAULT 3.0,
+    angulo_inclinacao DECIMAL(5,1) DEFAULT 45.0,
 
-    fov_h_graus DECIMAL(5,1) GENERATED ALWAYS AS (
-        ROUND(2 * ATAN2(sensor_largura_mm, 2 * NULLIF(distancia_focal_mm, 0)) * 180 / PI(), 1)
-    ) STORED,
+    fov_h_graus DECIMAL(5,1) DEFAULT NULL,
 
     largura_cena_alvo_m DECIMAL(10,2),      -- preenchido pelo editor
     ppm_calculado DECIMAL(10,2),

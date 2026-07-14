@@ -30,7 +30,7 @@ try {
 
     // Inserir câmaras
     if (isset($input['cameras']) && is_array($input['cameras'])) {
-        $stmt = $db->prepare("INSERT INTO plantas_cameras (planta_id, equipamento_id, nome, pos_x, pos_y, orientacao_graus, resolucao_h, resolucao_v, distancia_focal_mm, sensor_largura_mm, objetivo_dori, ppm_calculado, nivel_dori, conforme) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        $stmt = $db->prepare("INSERT INTO plantas_cameras (planta_id, equipamento_id, nome, pos_x, pos_y, orientacao_graus, resolucao_h, resolucao_v, distancia_focal_mm, sensor_largura_mm, altura_montagem_m, angulo_inclinacao, objetivo_dori, ppm_calculado, nivel_dori, conforme) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         foreach ($input['cameras'] as $cam) {
             $stmt->execute([
                 $planta_id,
@@ -43,6 +43,8 @@ try {
                 $cam['resolucao_v'] ?? 1080,
                 $cam['distancia_focal_mm'] ?? 4.0,
                 $cam['sensor_largura_mm'] ?? 5.6,
+                $cam['altura_montagem_m'] ?? 3.0,
+                $cam['angulo_inclinacao'] ?? 45.0,
                 $cam['objetivo_dori'] ?? 'R',
                 $cam['ppm_calculado'] ?? null,
                 $cam['nivel_dori'] ?? null,
