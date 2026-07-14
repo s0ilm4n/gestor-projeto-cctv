@@ -1,0 +1,21 @@
+# Gestor de Projeto CCTV — .gitignore
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# PHP
+*.log
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ambiente
+.env
