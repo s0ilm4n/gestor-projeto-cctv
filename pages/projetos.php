@@ -329,7 +329,7 @@ if ($action === 'view' && $id) {
                         $cc->execute([$pl['id']]);
                         echo $cc->fetchColumn();
                     ?></td>
-                    <td><a href="index.php?p=editor-planta&id=<?= $pl['id'] ?>" class="btn btn-sm btn-outline">✏️ Abrir</a></td>
+                    <td><a href="editor-planta.php?id=<?= $pl['id'] ?>" class="btn btn-sm btn-outline">✏️ Abrir</a></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
