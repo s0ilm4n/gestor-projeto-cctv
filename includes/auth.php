@@ -95,8 +95,8 @@ function validar_nif($nif): string {
 }
 
 // ===== XSS HELPER =====
-function e(string $str): string {
-    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+function e($str): string {
+    return htmlspecialchars((string)($str ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
 // ===== FORMATAÇÃO =====
