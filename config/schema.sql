@@ -319,6 +319,21 @@ CREATE TABLE IF NOT EXISTS config (
     descricao VARCHAR(255)
 ) ENGINE=InnoDB;
 
+-- ==============================================================
+-- LOGS DE AUDITORIA
+-- ==============================================================
+CREATE TABLE IF NOT EXISTS logs_auditoria (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT DEFAULT 0,
+    acao VARCHAR(50) NOT NULL,
+    detalhe TEXT,
+    ip VARCHAR(45) DEFAULT '',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_acao (acao),
+    INDEX idx_user (user_id),
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB;
+
 INSERT IGNORE INTO config (chave, valor, descricao) VALUES
 ('app_nome', 'Gestor de Projeto CCTV', 'Nome da aplicação'),
 ('app_versao', '1.0.0', 'Versão'),

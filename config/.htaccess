@@ -1,0 +1,2 @@
+# Proteger ficheiros sensíveis — acesso negado a todos
+Deny from all

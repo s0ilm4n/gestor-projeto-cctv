@@ -1,0 +1,2 @@
+# Proteger includes — acesso negado a todos
+Deny from all

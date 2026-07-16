@@ -30,10 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($action_post === 'add') {
                 $stmt = $db->prepare("INSERT INTO clientes (nome, nif, morada, localidade, codigo_postal, telefone, email, contato_nome, contato_telefone, contato_email, notas) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
                 $stmt->execute([$nome, $nif, $morada, $localidade, $codigo_postal, $telefone, $email, $contato_nome, $contato_telefone, $contato_email, $notas]);
+                logAuditoria('cliente_add', "Nome: $nome, NIF: $nif");
                 $_SESSION['flash'] = 'Cliente adicionado com sucesso.';
             } else {
                 $stmt = $db->prepare("UPDATE clientes SET nome=?, nif=?, morada=?, localidade=?, codigo_postal=?, telefone=?, email=?, contato_nome=?, contato_telefone=?, contato_email=?, notas=? WHERE id=?");
                 $stmt->execute([$nome, $nif, $morada, $localidade, $codigo_postal, $telefone, $email, $contato_nome, $contato_telefone, $contato_email, $notas, $id]);
+                logAuditoria('cliente_edit', "ID: $id, Nome: $nome");
                 $_SESSION['flash'] = 'Cliente atualizado com sucesso.';
             }
         } catch (PDOException $e) {
@@ -46,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$id) { header('Location: index.php?p=clientes'); exit; }
         try {
             $db->prepare("DELETE FROM clientes WHERE id = ?")->execute([$id]);
+            logAuditoria('cliente_delete', "ID: $id");
             $_SESSION['flash'] = 'Cliente eliminado.';
         } catch (PDOException $e) {
             $_SESSION['flash'] = 'Erro: Cliente tem projetos associados.';

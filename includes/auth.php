@@ -7,7 +7,7 @@ session_set_cookie_params([
     'lifetime' => 0,
     'path'     => '/',
     'domain'   => '',
-    'secure'   => false,       // true em produção com HTTPS
+    'secure'   => true,       // HTTPS obrigatório
     'httponly' => true,
     'samesite' => 'Lax'
 ]);
@@ -34,25 +34,84 @@ function verify_csrf(string $token = null): void {
     }
 }
 
+// ===== RATE LIMITING (Login) =====
+function checkRateLimit(): void {
+    $max_attempts = 5;
+    $window = 300; // 5 minutos
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+    if (!isset($_SESSION['login_attempts'])) {
+        $_SESSION['login_attempts'] = [];
+    }
+
+    // Limpar tentativas antigas
+    $_SESSION['login_attempts'] = array_filter($_SESSION['login_attempts'],
+        fn($t) => $t > (time() - $window)
+    );
+
+    if (count($_SESSION['login_attempts']) >= $max_attempts) {
+        $wait = $window - (time() - min($_SESSION['login_attempts']));
+        http_response_code(429);
+        die("Demasiadas tentativas. Aguarde " . ceil($wait / 60) . " minutos.");
+    }
+}
+function registrarTentativaLogin(): void {
+    $_SESSION['login_attempts'][] = time();
+}
+function limparRateLimit(): void {
+    unset($_SESSION['login_attempts']);
+}
+
+// ===== LOGS DE AUDITORIA =====
+function logAuditoria(string $acao, string $detalhe = ''): void {
+    $db = getDB();
+    $user_id = $_SESSION['user_id'] ?? 0;
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    try {
+        $db->prepare("INSERT INTO logs_auditoria (user_id, acao, detalhe, ip) VALUES (?,?,?,?)")
+            ->execute([$user_id, $acao, $detalhe, $ip]);
+    } catch (PDOException $e) {
+        // Tabela pode não existir — ignorar silenciosamente
+    }
+}
+
+// ===== SESSION TIMEOUT =====
+function checkSessionTimeout(): void {
+    $timeout = 3600; // 1 hora
+    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $timeout) {
+        $_SESSION = [];
+        session_destroy();
+        header('Location: login.php?timeout=1');
+        exit;
+    }
+    $_SESSION['last_activity'] = time();
+}
+
 // ===== AUTENTICAÇÃO =====
 function login(string $username, string $password): bool {
+    checkRateLimit();
     $db = getDB();
     $stmt = $db->prepare("SELECT * FROM users WHERE username = ? AND ativo = 1");
     $stmt->execute([$username]);
     $user = $stmt->fetch();
     if ($user && password_verify($password, $user['password_hash'])) {
+        limparRateLimit();
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_nome'] = $user['nome'];
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['user_username'] = $user['username'];
+        logAuditoria('login', "User: $username");
         return true;
     }
+    registrarTentativaLogin();
+    logAuditoria('login_falhou', "User: $username");
     return false;
 }
 function isLoggedIn(): bool { return isset($_SESSION['user_id']); }
 function requireLogin(): void {
     if (!isLoggedIn()) { header('Location: login.php'); exit; }
+    checkSessionTimeout();
 }
 function isAdmin(): bool { return $_SESSION['user_role'] === 'admin'; }
 function requireAdmin(): void {

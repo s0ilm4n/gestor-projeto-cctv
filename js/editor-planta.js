@@ -765,11 +765,18 @@ function guardarPlanta() {
         body: JSON.stringify({
             planta_id: plantaId, dados_json: JSON.stringify({ objects: dados }),
             cameras: extrairDadosCameras(), acessos: extrairDadosAcessos(),
-            zonas: extrairDadosZonas(), cabos: extrairDadosCabos()
+            zonas: extrairDadosZonas(), cabos: extrairDadosCabos(),
+            csrf_token: CSRF_TOKEN
         })
     })
     .then(r => r.json())
-    .then(res => { alert(res.success ? '✅ Planta guardada!' : '❌ Erro: ' + (res.error || 'desconhecido')); })
+    .then(res => {
+        if (res.success) {
+            window.location.href = 'index.php?p=plantas&projeto_id=' + PLANT_DATA.projeto_id;
+        } else {
+            alert('❌ Erro: ' + (res.error || 'desconhecido'));
+        }
+    })
     .catch(err => alert('❌ Erro de rede: ' + err));
 }
 

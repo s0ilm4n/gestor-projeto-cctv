@@ -13,6 +13,13 @@ if (!$input || !isset($input['planta_id'])) {
     die(json_encode(['success' => false, 'error' => 'Dados inválidos']));
 }
 
+// 🔒 Verificar CSRF
+$csrf_token = $input['csrf_token'] ?? '';
+if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
+    http_response_code(403);
+    die(json_encode(['success' => false, 'error' => 'Token CSRF inválido. Recarregue a página.']));
+}
+
 $planta_id = (int)$input['planta_id'];
 
 try {

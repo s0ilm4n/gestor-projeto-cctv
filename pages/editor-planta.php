@@ -46,6 +46,7 @@ $dados_json = $planta['dados_json'];
 
 $pageTitle = 'Editor: ' . $planta['nome'] . ' — ' . $planta['nome_projeto'];
 $page = 'plantas';
+$baseHref = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/\\');
 ?>
 <?php include __DIR__ . '/../includes/header.php'; ?>
 
@@ -241,8 +242,11 @@ $page = 'plantas';
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
-<script src="js/editor-planta.js?v=1"></script>
+<script src="js/editor-planta.js?v=2"></script>
 <script>
+// CSRF token para AJAX
+const CSRF_TOKEN = '<?= csrf_token() ?>';
+
 // Inicializar editor com dados da BD
 const PLANT_DATA = <?= json_encode([
     'id' => $planta['id'],

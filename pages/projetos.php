@@ -41,11 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $db->prepare("INSERT INTO projetos_cctv (cliente_id, nome_projeto, local_instalacao, referencia_interna, estado, nivel_risco_global, objetivo_dori_principal, alvara_psp, tecnico_responsavel, tecnico_registo, data_inicio, data_conclusao, tipo_gravador, gravador_marca, gravador_modelo, num_canais, capacidade_armazenamento_gb, retencao_dias, sinaletica_colocada, comunicacao_cnpd, observacoes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 $stmt->execute([$cliente_id, $nome_projeto, $local_instalacao, $referencia_interna, $estado, $nivel_risco_global, $objetivo_dori, $alvara_psp, $tecnico, $tecnico_registo, $data_inicio, $data_conclusao, $tipo_gravador, $gravador_marca, $gravador_modelo, $num_canais, $capacidade_gb, $retencao, $sinaletica, $cnpd, $obs]);
                 $novo_id = $db->lastInsertId();
+                logAuditoria('projeto_add', "ID: $novo_id, Nome: $nome_projeto");
                 $_SESSION['flash'] = 'Projeto criado com sucesso.';
                 header("Location: index.php?p=projetos&action=view&id=$novo_id"); exit;
             } else {
                 $stmt = $db->prepare("UPDATE projetos_cctv SET cliente_id=?, nome_projeto=?, local_instalacao=?, referencia_interna=?, estado=?, nivel_risco_global=?, objetivo_dori_principal=?, alvara_psp=?, tecnico_responsavel=?, tecnico_registo=?, data_inicio=?, data_conclusao=?, tipo_gravador=?, gravador_marca=?, gravador_modelo=?, num_canais=?, capacidade_armazenamento_gb=?, retencao_dias=?, sinaletica_colocada=?, comunicacao_cnpd=?, observacoes=? WHERE id=?");
                 $stmt->execute([$cliente_id, $nome_projeto, $local_instalacao, $referencia_interna, $estado, $nivel_risco_global, $objetivo_dori, $alvara_psp, $tecnico, $tecnico_registo, $data_inicio, $data_conclusao, $tipo_gravador, $gravador_marca, $gravador_modelo, $num_canais, $capacidade_gb, $retencao, $sinaletica, $cnpd, $obs, $id]);
+                logAuditoria('projeto_edit', "ID: $id");
                 $_SESSION['flash'] = 'Projeto atualizado.';
                 header("Location: index.php?p=projetos&action=view&id=$id"); exit;
             }
@@ -58,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($post_action === 'delete' && $id) {
         try {
             $db->prepare("DELETE FROM projetos_cctv WHERE id=?")->execute([$id]);
+            logAuditoria('projeto_delete', "ID: $id");
             $_SESSION['flash'] = 'Projeto eliminado.';
         } catch (PDOException $e) {
             $_SESSION['flash'] = 'Erro ao eliminar.';

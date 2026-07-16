@@ -4,7 +4,7 @@
  */
 $db = getDB();
 $action = $_GET['action'] ?? 'list';
-$id = (int)($_GET['id'] ?? 0);
+$id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
 $projeto_id = (int)($_GET['projeto_id'] ?? 0);
 
 // POST: create/edit plant
@@ -24,11 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $db->prepare("INSERT INTO plantas (projeto_id, nome, tipo, piso, descricao) VALUES (?,?,?,?,?)");
                 $stmt->execute([$projeto_id, $nome, $tipo, $piso, $descricao]);
                 $novo_id = $db->lastInsertId();
+                logAuditoria('planta_add', "ID: $novo_id, Nome: $nome, Projeto: $projeto_id");
                 $_SESSION['flash'] = 'Planta criada.';
                 header("Location: pages/editor-planta.php?id=$novo_id"); exit;
             } else {
                 $stmt = $db->prepare("UPDATE plantas SET nome=?, tipo=?, piso=?, descricao=? WHERE id=?");
                 $stmt->execute([$nome, $tipo, $piso, $descricao, $id]);
+                logAuditoria('planta_edit', "ID: $id");
                 $_SESSION['flash'] = 'Planta atualizada.';
             }
         } catch (PDOException $e) {
@@ -44,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pid = $pl ? $pl['projeto_id'] : 0;
         try {
             $db->prepare("DELETE FROM plantas WHERE id=?")->execute([$id]);
+            logAuditoria('planta_delete', "ID: $id");
             $_SESSION['flash'] = 'Planta eliminada.';
         } catch (PDOException $e) {
             $_SESSION['flash'] = 'Erro ao eliminar.';
@@ -118,6 +121,7 @@ if ($action === 'list') {
                     <form method="POST" style="display:inline" onsubmit="return confirm('Eliminar planta e todos os dados associados?')">
                         <?= csrf_field() ?>
                         <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" value="<?= $pl['id'] ?>">
                         <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
                     </form>
                 </div>
