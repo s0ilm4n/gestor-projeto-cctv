@@ -54,45 +54,56 @@ $page = 'plantas';
 </div>
 
 <div class="editor-layout">
-    <!-- Canvas Container -->
-    <div class="editor-canvas-container" id="canvas-container">
-        <canvas id="plantaCanvas" width="<?= $planta['dimensao_x'] ?>" height="<?= $planta['dimensao_y'] ?>"></canvas>
-    </div>
-
-    <!-- Painel Lateral -->
-    <div class="editor-panel" id="editor-panel">
-        <!-- Ferramentas -->
-        <h3>🔧 Ferramentas</h3>
-        <div class="editor-tools">
+    <!-- Coluna Principal: toolbar + canvas -->
+    <div class="editor-main">
+        <!-- Barra de Ferramentas (topo) -->
+        <div class="editor-toolbar">
             <div class="tool-btn" data-tool="select" onclick="ativarFerramenta('select')">
-                <span class="tool-icon">👆</span> Selecionar
+                <span class="tool-icon">👆</span><span class="tool-label">Selecionar</span>
             </div>
             <div class="tool-btn" data-tool="wall" onclick="ativarFerramenta('wall')">
-                <span class="tool-icon">🧱</span> Parede
+                <span class="tool-icon">🧱</span><span class="tool-label">Parede</span>
             </div>
             <div class="tool-btn" data-tool="camera" onclick="ativarFerramenta('camera')">
-                <span class="tool-icon">📹</span> Câmara
+                <span class="tool-icon">📹</span><span class="tool-label">Câmara</span>
             </div>
             <div class="tool-btn" data-tool="access" onclick="ativarFerramenta('access')">
-                <span class="tool-icon">🔐</span> Acesso
+                <span class="tool-icon">🔐</span><span class="tool-label">Acesso</span>
             </div>
             <div class="tool-btn" data-tool="zona" onclick="ativarFerramenta('zona')">
-                <span class="tool-icon">📐</span> Zona
+                <span class="tool-icon">📐</span><span class="tool-label">Zona</span>
             </div>
             <div class="tool-btn" data-tool="medir" onclick="ativarFerramenta('medir')">
-                <span class="tool-icon">📏</span> Medir
+                <span class="tool-icon">📏</span><span class="tool-label">Medir</span>
             </div>
             <div class="tool-btn" data-tool="cabo" onclick="ativarFerramenta('cabo')">
-                <span class="tool-icon">🔌</span> Cabo
+                <span class="tool-icon">🔌</span><span class="tool-label">Cabo</span>
             </div>
             <div class="tool-btn" data-tool="texto" onclick="ativarFerramenta('texto')">
-                <span class="tool-icon">A</span> Texto
+                <span class="tool-icon">A</span><span class="tool-label">Texto</span>
             </div>
-            <div class="tool-btn" onclick="eliminarSelecionado()">
-                <span class="tool-icon">🗑️</span> Eliminar
+            <div class="tool-sep"></div>
+            <div class="tool-btn tool-btn-danger" onclick="eliminarSelecionado()">
+                <span class="tool-icon">🗑️</span><span class="tool-label">Eliminar</span>
+            </div>
+            <div class="tool-sep"></div>
+            <div class="toolbar-zoom-group">
+                <button class="btn btn-sm btn-outline" onclick="zoomOut()" title="Diminuir zoom">➖</button>
+                <span class="zoom-level" id="zoom-level" style="font-size:0.85rem;color:var(--text-muted);min-width:40px;text-align:center">100%</span>
+                <button class="btn btn-sm btn-outline" onclick="zoomIn()" title="Aumentar zoom">➕</button>
+                <button class="btn btn-sm btn-outline" onclick="zoomFit()" title="Ajustar">⊞</button>
+                <button class="btn btn-sm btn-outline" onclick="zoomOneToOne()" title="100%">1:1</button>
             </div>
         </div>
 
+        <!-- Canvas -->
+        <div class="editor-canvas-container" id="canvas-container">
+            <canvas id="plantaCanvas" width="<?= $planta['dimensao_x'] ?>" height="<?= $planta['dimensao_y'] ?>"></canvas>
+        </div>
+    </div>
+
+    <!-- Painel Lateral (propriedades, cameras, zonas, acoes, info) -->
+    <div class="editor-panel" id="editor-panel">
         <!-- Propriedades do Objeto -->
         <h3>⚙️ Propriedades</h3>
         <div id="propriedades-panel">
@@ -138,17 +149,6 @@ $page = 'plantas';
             <input type="file" id="upload-image" accept="image/*" style="display:none" onchange="colocarImagemFundo(this)">
             <button class="btn btn-sm btn-outline" onclick="limparCanvas()">🗑️ Limpar Tudo</button>
         </div>
-
-        <!-- Zoom -->
-        <h3>🔍 Zoom</h3>
-        <div class="zoom-controls" style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn btn-sm btn-outline" onclick="zoomIn()" title="Aumentar zoom">➕</button>
-            <button class="btn btn-sm btn-outline" onclick="zoomOut()" title="Diminuir zoom">➖</button>
-            <button class="btn btn-sm btn-outline" onclick="zoomFit()" title="Ajustar ao ecrã">⊞</button>
-            <button class="btn btn-sm btn-outline" onclick="zoomOneToOne()" title="100%">1:1</button>
-            <span class="zoom-level" id="zoom-level" style="font-size:0.85rem;color:var(--text-muted);align-self:center;margin-left:4px">100%</span>
-        </div>
-        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;line-height:1.4">Ctrl+Scroll para ampliar,<br>Alt+arrastar para navegar.</p>
 
         <!-- Info -->
         <h3>📊 Info</h3>
