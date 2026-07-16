@@ -18,13 +18,19 @@ if (in_array($page, $admin_pages) && !isAdmin()) $page = 'dashboard';
 
 $pageTitle = 'Gestor de Projeto CCTV';
 
+// 🟢 Processar POST primeiro (pode fazer redirects)
+ob_start();
+include __DIR__ . '/pages/' . $page . '.php';
+$pageContent = ob_get_clean();
+
 // Flash message
 $flash = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
 
+// Agora sim, renderizar header + conteúdo
 include __DIR__ . '/includes/header.php';
 if ($flash): ?>
 <div class="flash-message"><?= e($flash) ?></div>
 <?php endif;
-include __DIR__ . '/pages/' . $page . '.php';
+echo $pageContent;
 include __DIR__ . '/includes/footer.php';
