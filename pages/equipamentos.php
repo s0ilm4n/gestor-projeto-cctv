@@ -83,9 +83,7 @@ if ($action === 'list') {
     <div class="page-header">
         <h1>📹 Equipamentos</h1>
         <div class="page-actions">
-            <?php if ($projeto_id): ?>
-            <a href="index.php?p=equipamentos&action=add&projeto_id=<?= $projeto_id ?>" class="btn btn-primary">+ Novo Equipamento</a>
-            <?php endif; ?>
+            <a href="index.php?p=equipamentos&action=add<?= $projeto_id ? '&projeto_id='.$projeto_id : '' ?>" class="btn btn-primary">+ Novo Equipamento</a>
             <a href="index.php?p=projetos" class="btn btn-outline">← Projetos</a>
         </div>
     </div>

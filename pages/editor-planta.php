@@ -139,6 +139,17 @@ $page = 'plantas';
             <button class="btn btn-sm btn-outline" onclick="limparCanvas()">🗑️ Limpar Tudo</button>
         </div>
 
+        <!-- Zoom -->
+        <h3>🔍 Zoom</h3>
+        <div class="zoom-controls" style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-sm btn-outline" onclick="zoomIn()" title="Aumentar zoom">➕</button>
+            <button class="btn btn-sm btn-outline" onclick="zoomOut()" title="Diminuir zoom">➖</button>
+            <button class="btn btn-sm btn-outline" onclick="zoomFit()" title="Ajustar ao ecrã">⊞</button>
+            <button class="btn btn-sm btn-outline" onclick="zoomOneToOne()" title="100%">1:1</button>
+            <span class="zoom-level" id="zoom-level" style="font-size:0.85rem;color:var(--text-muted);align-self:center;margin-left:4px">100%</span>
+        </div>
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;line-height:1.4">Ctrl+Scroll para ampliar,<br>Alt+arrastar para navegar.</p>
+
         <!-- Info -->
         <h3>📊 Info</h3>
         <div style="font-size:0.85rem">

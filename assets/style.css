@@ -305,6 +305,31 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
 /* ===== CANVAS EDITOR ===== */
 .editor-layout {
     display: flex; gap: 16px;
+    flex: 1; min-height: 0;
+    height: calc(100vh - 120px);
+}
+.editor-canvas-container {
+    flex: 1; background: var(--bg-card); border-radius: var(--radius);
+    border: 1px solid var(--border); overflow: hidden;
+    position: relative;
+}
+.editor-canvas-container canvas {
+    display: block;
+}
+.editor-panel {
+    width: 320px; min-width: 320px;
+    background: var(--bg-card); border-radius: var(--radius);
+    border: 1px solid var(--border); padding: 16px;
+    max-height: calc(100vh - 140px); overflow-y: auto;
+}
+.editor-panel h3 {
+    font-size: 1rem; color: var(--text-heading); margin-bottom: 16px;
+    margin-top: 16px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.editor-panel h3:first-child { margin-top: 0; }
+.editor-layout {
+    display: flex; gap: 16px;
 }
 .editor-canvas-container {
     flex: 1; background: var(--bg-card); border-radius: var(--radius);
