@@ -5,6 +5,11 @@
 require_once __DIR__ . '/includes/auth.php';
 requireLogin();
 
+// Anti-cache para evitar problemas de redirect
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 $page = $_GET['p'] ?? 'dashboard';
 $allowed_pages = [
     'dashboard', 'projetos', 'clientes', 'equipamentos',
